@@ -51,6 +51,29 @@ export async function getOneCredential(
 	}
 }
 
+export async function deleteCredential(
+	req: AuthenticatedRequest,
+	res: Response
+) {
+	const { userId } = req;
+	const { id } = req.params;
+	const credentialId = Number(id);
+
+	try {
+		await credentialsService.deleteCredential(credentialId, userId);
+
+		res.status(httpStatus.OK).send({});
+	} catch (error) {
+		if (error.name === 'NotFoundError') {
+			return res.sendStatus(httpStatus.NOT_FOUND);
+		}
+		if (error.name === 'UnauthorizedError') {
+			return res.sendStatus(httpStatus.UNAUTHORIZED);
+		}
+		return res.sendStatus(httpStatus.BAD_REQUEST);
+	}
+}
+
 export async function postCredential(req: AuthenticatedRequest, res: Response) {
 	const { title, url, username, password } = req.body;
 	const { userId } = req;

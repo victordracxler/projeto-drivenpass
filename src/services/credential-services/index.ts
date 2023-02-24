@@ -76,10 +76,26 @@ async function getCredentialById(id: number, userId: number) {
 	return decryptedCredential;
 }
 
+async function deleteCredential(id: number, userId: number) {
+	const encryptedCredential = await credentialsRepository.findCredentialbyId(
+		id
+	);
+
+	if (!encryptedCredential) {
+		throw notFoundError();
+	}
+	if (encryptedCredential.userId !== userId) {
+		throw unauthorizedError();
+	}
+
+	await credentialsRepository.deleteCredentialById(id);
+}
+
 const credentialsService = {
 	createCredential,
 	getAllUserCredentials,
 	getCredentialById,
+	deleteCredential,
 };
 
 export default credentialsService;

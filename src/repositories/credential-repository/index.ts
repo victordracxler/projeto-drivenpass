@@ -25,11 +25,18 @@ async function findCredentialbyId(id: number) {
 	});
 }
 
+async function deleteCredentialById(id: number) {
+	return prisma.credential.delete({
+		where: { id },
+	});
+}
+
 const credentialsRepository = {
 	createCredential,
 	findCredentialsByUserId,
 	findCredentialsByTitle,
 	findCredentialbyId,
+	deleteCredentialById,
 };
 
 export default credentialsRepository;

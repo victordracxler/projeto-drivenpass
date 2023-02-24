@@ -1,4 +1,5 @@
 import {
+	deleteCredential,
 	getAllCredentials,
 	getOneCredential,
 	postCredential,
@@ -13,6 +14,7 @@ credentialsRouter
 	.all('/*', authenticateToken)
 	.get('/', getAllCredentials)
 	.get('/:id', getOneCredential)
-	.post('/', validateBody(credentialSchema), postCredential);
+	.post('/', validateBody(credentialSchema), postCredential)
+	.delete('/:id', deleteCredential);
 
 export { credentialsRouter };
