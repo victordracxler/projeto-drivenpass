@@ -10,7 +10,7 @@ async function createCredential(data: Prisma.CredentialUncheckedCreateInput) {
 	const titleAlreadyExists =
 		await credentialsRepository.findCredentialsByTitle(data.title);
 
-	if (titleAlreadyExists) {
+	if (titleAlreadyExists && titleAlreadyExists.userId === data.userId) {
 		throw unauthorizedError();
 	}
 

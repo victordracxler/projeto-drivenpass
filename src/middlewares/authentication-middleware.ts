@@ -29,7 +29,7 @@ export async function authenticateToken(
 		});
 		if (!session) return generateUnauthorizedResponse(res);
 
-		req.userId = userId;
+		req.userId = session.userId;
 		//TODO mudar aqui
 		return next();
 	} catch (err) {

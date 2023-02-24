@@ -31,10 +31,11 @@ export async function getOneCredential(
 ) {
 	const { userId } = req;
 	const { id } = req.params;
+	const credentialId = Number(id);
 
 	try {
 		const credential = await credentialsService.getCredentialById(
-			Number(id),
+			credentialId,
 			userId
 		);
 
@@ -52,7 +53,7 @@ export async function getOneCredential(
 
 export async function postCredential(req: AuthenticatedRequest, res: Response) {
 	const { title, url, username, password } = req.body;
-	const userId = req.userId;
+	const { userId } = req;
 
 	const credentialData = {
 		title,
