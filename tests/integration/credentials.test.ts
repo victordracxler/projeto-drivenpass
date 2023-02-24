@@ -309,3 +309,113 @@ describe('GET /credentials/:id', () => {
 		});
 	});
 });
+
+describe('DELETE /credentials/:id', () => {
+	it('should respond with status 401 if no token is given', async () => {
+		const response = await server.delete('/credentials/1');
+
+		expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+	});
+
+	it('should respond with status 401 if given token is not valid', async () => {
+		const token = faker.lorem.word();
+
+		const response = await server
+			.delete('/credentials/1')
+			.set('Authorization', `Bearer ${token}`);
+
+		expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+	});
+
+	it('should respond with status 401 if there is no session for given token', async () => {
+		const userWithoutSession = await createUser();
+		const token = jwt.sign(
+			{ userId: userWithoutSession.id },
+			process.env.JWT_SECRET
+		);
+
+		const response = await server
+			.delete('/credentials/1')
+			.set('Authorization', `Bearer ${token}`);
+
+		expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+	});
+
+	describe('when token is valid', () => {
+		it('should respond with status 404 when id does not exist', async () => {
+			const user = await createUser();
+			const token = await generateValidToken(user);
+
+			const response = await server
+				.delete('/credentials/0')
+				.set('Authorization', `Bearer ${token}`);
+
+			expect(response.status).toBe(httpStatus.NOT_FOUND);
+		});
+
+		it('should respond with status 400 when id does not valid', async () => {
+			const user = await createUser();
+			const token = await generateValidToken(user);
+
+			const response = await server
+				.delete('/credentials/a')
+				.set('Authorization', `Bearer ${token}`);
+
+			expect(response.status).toBe(httpStatus.BAD_REQUEST);
+		});
+
+		describe('when id is valid', () => {
+			it('should respond with status 401 when credential belongs to another user', async () => {
+				const user1 = await createUser();
+				const token1 = await generateValidToken(user1);
+
+				const user2 = await createUser();
+				const token2 = await generateValidToken(user2);
+
+				const data = {
+					title: faker.internet.domainWord(),
+					url: faker.internet.url(),
+					username: faker.internet.userName(),
+					password: faker.internet.password(8),
+				};
+				const firstCredential = await server
+					.post('/credentials')
+					.send(data)
+					.set('Authorization', `Bearer ${token1}`);
+
+				const response = await server
+					.delete(`/credentials/${firstCredential.body.id}`)
+					.set('Authorization', `Bearer ${token2}`);
+
+				expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+			});
+
+			it('should respond with status 200 and delete credential', async () => {
+				const user = await createUser();
+				const token = await generateValidToken(user);
+
+				const data = {
+					title: faker.internet.domainWord(),
+					url: faker.internet.url(),
+					username: faker.internet.userName(),
+					password: faker.internet.password(8),
+				};
+				const firstCredential = await server
+					.post('/credentials')
+					.send(data)
+					.set('Authorization', `Bearer ${token}`);
+
+				const response = await server
+					.delete(`/credentials/${firstCredential.body.id}`)
+					.set('Authorization', `Bearer ${token}`);
+
+				const checkDeletion = await server
+					.get(`/credentials/${firstCredential.body.id}`)
+					.set('Authorization', `Bearer ${token}`);
+
+				expect(response.status).toBe(httpStatus.OK);
+				expect(checkDeletion.status).toBe(httpStatus.NOT_FOUND);
+			});
+		});
+	});
+});
