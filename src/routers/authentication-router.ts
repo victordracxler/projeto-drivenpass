@@ -5,8 +5,8 @@ import { Router } from 'express';
 
 const authenticationRouter = Router();
 
-authenticationRouter.post('/sign-up', validateBody(SignUpSchema), signUp);
-
-authenticationRouter.post('/sign-in', validateBody(signInSchema), signIn);
+authenticationRouter
+	.post('/sign-up', validateBody(SignUpSchema), signUp)
+	.post('/sign-in', validateBody(signInSchema), signIn);
 
 export { authenticationRouter };
