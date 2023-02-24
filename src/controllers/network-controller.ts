@@ -12,12 +12,6 @@ export async function getAllNetworks(req: AuthenticatedRequest, res: Response) {
 
 		res.status(httpStatus.OK).send(networkList);
 	} catch (error) {
-		if (error.name === 'NotFoundError') {
-			return res.sendStatus(httpStatus.NOT_FOUND);
-		}
-		if (error.name === 'UnauthorizedError') {
-			return res.sendStatus(httpStatus.UNAUTHORIZED);
-		}
 		return res.sendStatus(httpStatus.BAD_REQUEST);
 	}
 }
@@ -77,9 +71,6 @@ export async function postNetwork(req: AuthenticatedRequest, res: Response) {
 
 		res.status(httpStatus.CREATED).send({ id: newNetwork });
 	} catch (error) {
-		if (error.name === 'NotFoundError') {
-			return res.sendStatus(httpStatus.NOT_FOUND);
-		}
 		if (error.name === 'UnauthorizedError') {
 			return res.sendStatus(httpStatus.UNAUTHORIZED);
 		}

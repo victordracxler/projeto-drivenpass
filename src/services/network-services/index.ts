@@ -6,14 +6,6 @@ import Cryptr from 'cryptr';
 const cryptr = new Cryptr(process.env.JWT_SECRET);
 
 async function createNetwork(data: Prisma.NetworkUncheckedCreateInput) {
-	const titleAlreadyExists = await networksRepository.findNetworksByTitle(
-		data.title
-	);
-
-	if (titleAlreadyExists && titleAlreadyExists.userId === data.userId) {
-		throw unauthorizedError();
-	}
-
 	const encryptedPassword = cryptr.encrypt(data.password);
 
 	const networkData: Prisma.NetworkUncheckedCreateInput = {

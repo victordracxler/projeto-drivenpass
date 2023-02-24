@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import supertest from 'supertest';
 import { cleanDb, generateValidToken } from '../helpers';
 import * as jwt from 'jsonwebtoken';
-import { createCredential, createUser } from '../factories';
+import { createUser } from '../factories';
 
 beforeAll(async () => {
 	await init();
@@ -94,7 +94,6 @@ describe('POST /credentials', () => {
 			it('should respond with status 401 when user already have a credential with same title', async () => {
 				const user = await createUser();
 				const token = await generateValidToken(user);
-				// const credential = await createCredential({ userId: user.id });
 
 				const data = {
 					title: faker.internet.domainWord(),
@@ -353,7 +352,7 @@ describe('DELETE /credentials/:id', () => {
 			expect(response.status).toBe(httpStatus.NOT_FOUND);
 		});
 
-		it('should respond with status 400 when id does not valid', async () => {
+		it('should respond with status 400 when id is not valid', async () => {
 			const user = await createUser();
 			const token = await generateValidToken(user);
 
@@ -415,6 +414,28 @@ describe('DELETE /credentials/:id', () => {
 
 				expect(response.status).toBe(httpStatus.OK);
 				expect(checkDeletion.status).toBe(httpStatus.NOT_FOUND);
+			});
+
+			it('should respond with status 404 for inexistent id', async () => {
+				const user = await createUser();
+				const token = await generateValidToken(user);
+
+				const data = {
+					title: faker.internet.domainWord(),
+					url: faker.internet.url(),
+					username: faker.internet.userName(),
+					password: faker.internet.password(8),
+				};
+				const firstCredential = await server
+					.post('/credentials')
+					.send(data)
+					.set('Authorization', `Bearer ${token}`);
+
+				const response = await server
+					.delete(`/credentials/${firstCredential.body.id + 1}`)
+					.set('Authorization', `Bearer ${token}`);
+
+				expect(response.status).toBe(httpStatus.NOT_FOUND);
 			});
 		});
 	});
