@@ -1,6 +1,5 @@
 import { notFoundError, unauthorizedError } from '@/errors';
 import credentialsRepository from '@/repositories/credential-repository';
-import { exclude } from '@/utils/prisma-utils';
 import { Prisma, User } from '@prisma/client';
 import Cryptr from 'cryptr';
 

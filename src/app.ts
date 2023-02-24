@@ -6,7 +6,11 @@ import { loadEnv, connectDb, disconnectDB } from '@/config';
 loadEnv();
 
 import { handleApplicationErrors } from '@/middlewares';
-import { authenticationRouter, credentialsRouter } from '@/routers';
+import {
+	authenticationRouter,
+	credentialsRouter,
+	networksRouter,
+} from '@/routers';
 
 const app = express();
 app.use(cors())
@@ -14,6 +18,7 @@ app.use(cors())
 	.get('/health', (_req, res) => res.send('OK!'))
 	.use('/', authenticationRouter)
 	.use('/credentials', credentialsRouter)
+	.use('/networks', networksRouter)
 	.use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
