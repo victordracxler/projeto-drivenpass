@@ -75,7 +75,7 @@ export async function postNetwork(req: AuthenticatedRequest, res: Response) {
 	try {
 		const newNetwork = await networksService.createNetwork(networkData);
 
-		res.sendStatus(httpStatus.CREATED);
+		res.status(httpStatus.CREATED).send({ id: newNetwork });
 	} catch (error) {
 		if (error.name === 'NotFoundError') {
 			return res.sendStatus(httpStatus.NOT_FOUND);
