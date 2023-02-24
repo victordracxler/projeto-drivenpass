@@ -91,7 +91,7 @@ export async function postCredential(req: AuthenticatedRequest, res: Response) {
 			credentialData
 		);
 
-		res.sendStatus(httpStatus.CREATED);
+		res.status(httpStatus.CREATED).send({ id: newCredential });
 	} catch (error) {
 		if (error.name === 'NotFoundError') {
 			return res.sendStatus(httpStatus.NOT_FOUND);
